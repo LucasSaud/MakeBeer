@@ -138,6 +138,9 @@ function createMissingTables($pdo, $missingTables) {
     $sql = preg_replace('/--.*$/m', '', $sql);
     $sql = preg_replace('/\/\*.*?\*\//s', '', $sql);
 
+    // Desabilita verificação de chaves estrangeiras temporariamente
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+
     // Extrai CREATE TABLE de cada tabela faltante
     foreach ($missingTables as $tableName) {
         $logs[] = "Criando tabela: <strong>$tableName</strong>";
@@ -162,6 +165,9 @@ function createMissingTables($pdo, $missingTables) {
             $logs[] = "<span style='color: orange;'>$error</span>";
         }
     }
+
+    // Reabilita verificação de chaves estrangeiras
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
     return [
         'success' => empty($errors),
@@ -259,6 +265,79 @@ function addMissingColumns($pdo) {
             $logs[] = "<span style='color: orange;'>$error</span>";
         }
     }
+
+    // Aplicar migração para importação de receitas BeerXML
+    $importMigrationResult = applyImportMigration($pdo);
+    $logs = array_merge($logs, $importMigrationResult['logs']);
+    if (!$importMigrationResult['success']) {
+        $errors = array_merge($errors, $importMigrationResult['errors']);
+    }
+
+    return [
+        'success' => empty($errors),
+        'logs' => $logs,
+        'errors' => $errors
+    ];
+}
+
+function applyImportMigration($pdo) {
+    $logs = [];
+    $errors = [];
+
+    $logs[] = "Aplicando migração para importação de receitas BeerXML...";
+
+    // Verificar se o arquivo de migração existe
+    $migrationFile = __DIR__ . '/database/migrations/002_add_import_columns.sql';
+    if (!file_exists($migrationFile)) {
+        $logs[] = "<span style='color: orange;'>⚠ Arquivo de migração 002 não encontrado, pulando...</span>";
+        return ['success' => true, 'logs' => $logs, 'errors' => $errors];
+    }
+
+    // Ler o conteúdo do arquivo
+    $sql = file_get_contents($migrationFile);
+
+    // Remover comentários e linhas vazias
+    $sql = preg_replace('/--.*$/m', '', $sql);
+    $sql = preg_replace('/\/\*.*?\*\//s', '', $sql);
+    $sql = preg_replace('/^\s*[\r\n]/m', '', $sql);
+
+    // Desabilita verificação de chaves estrangeiras temporariamente
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+
+    // Dividir em comandos individuais
+    $commands = explode(';', $sql);
+
+    $successCount = 0;
+    $errorCount = 0;
+
+    foreach ($commands as $command) {
+        $command = trim($command);
+        if (empty($command)) {
+            continue;
+        }
+
+        try {
+            $pdo->exec($command);
+            $successCount++;
+        } catch (PDOException $e) {
+            // Ignorar erros de colunas já existentes
+            if (strpos($e->getMessage(), 'Duplicate column name') !== false ||
+                strpos($e->getMessage(), 'already exists') !== false ||
+                strpos($e->getMessage(), 'Duplicate entry') !== false) {
+                // Coluna ou índice já existe, ignorar
+                $successCount++;
+            } else {
+                $error = "Erro ao executar comando: " . $e->getMessage();
+                $errors[] = $error;
+                $errorCount++;
+            }
+        }
+    }
+
+    // Reabilita verificação de chaves estrangeiras
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
+
+    $logs[] = "✓ Migração 002 aplicada: $successCount comandos executados";
 
     return [
         'success' => empty($errors),
@@ -436,6 +515,7 @@ $additionalCSS = '<link rel="stylesheet" href="/public/css/style.css">';
                                         <li>✅ Não sobrescreve dados existentes</li>
                                         <li>✅ Compatível com Windows e Linux</li>
                                         <li>✅ Ideal para atualizar sistemas em produção</li>
+                                        <li>✅ Aplica migrações para funcionalidades adicionais</li>
                                     </ul>
                                 </div>
                             </div>
