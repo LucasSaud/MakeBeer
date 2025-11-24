@@ -2,8 +2,6 @@
 // Configurações gerais do sistema
 define('APP_NAME', 'MakeBeer v1.0');
 define('APP_VERSION', '1.0.0');
-define('APP_URL', 'http://localhost:8888');
-define('BASE_PATH', 'http://localhost:8888');
 
 // Configurações de ambiente
 define('ENVIRONMENT', 'development'); // development, production

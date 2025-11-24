@@ -36,6 +36,13 @@ spl_autoload_register(function ($class) {
 // Roteamento simples
 $request = $_SERVER['REQUEST_URI'];
 $path = parse_url($request, PHP_URL_PATH);
+
+// Detectar e remover o subdiretório automaticamente
+$scriptName = dirname($_SERVER['SCRIPT_NAME']);
+if ($scriptName !== '/' && strpos($path, $scriptName) === 0) {
+    $path = substr($path, strlen($scriptName));
+}
+
 $path = trim($path, '/');
 
 // Tratamento especial para rotas de login
