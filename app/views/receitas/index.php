@@ -7,6 +7,9 @@ include 'app/views/layouts/header.php';
 <div class="page-header d-flex justify-content-between align-items-center">
     <h1 class="page-title">📝 Gestão de Receitas</h1>
     <div class="page-actions">
+        <?php if (getCurrentUser()['perfil'] === 'administrador'): ?>
+            <a href="/import" class="btn btn-info mr-2">📥 Importar Receitas</a>
+        <?php endif; ?>
         <a href="/receitas/create" class="btn btn-primary">+ Nova Receita</a>
     </div>
 </div>

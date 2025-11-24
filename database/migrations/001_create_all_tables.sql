@@ -225,29 +225,6 @@ CREATE TABLE IF NOT EXISTS envases (
 -- NOTA: Tabela 'barris' removida pois pode conflitar com catálogo existente de barris físicos
 -- Os dados de envase de barris são armazenados diretamente na tabela estoque_barris
 
--- Tabela de Saída de Barril
-CREATE TABLE IF NOT EXISTS saida_barril (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    estoque_barril_id INT,
-    envase_id INT NOT NULL,
-    lote_codigo VARCHAR(50) NOT NULL,
-    numero_barril INT NOT NULL,
-    quantidade_litros DECIMAL(10,2) NOT NULL,
-    estilo VARCHAR(100),
-    data_saida DATE NOT NULL,
-    destino VARCHAR(255),
-    responsavel_id INT,
-    observacoes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (estoque_barril_id) REFERENCES estoque_barris(id) ON DELETE SET NULL,
-    FOREIGN KEY (envase_id) REFERENCES envases(id) ON DELETE CASCADE,
-    FOREIGN KEY (responsavel_id) REFERENCES usuarios(id) ON DELETE SET NULL,
-    INDEX idx_estoque_barril (estoque_barril_id),
-    INDEX idx_data (data_saida),
-    INDEX idx_lote (lote_codigo)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 -- Tabela de Estoque de Barris
 -- NOTA: barril_fisico_id é opcional e referencia o catálogo de barris físicos, se existir
 CREATE TABLE IF NOT EXISTS estoque_barris (
@@ -272,6 +249,29 @@ CREATE TABLE IF NOT EXISTS estoque_barris (
     INDEX idx_lote (lote_codigo),
     INDEX idx_status (status),
     INDEX idx_codigo_barril (codigo_barril)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela de Saída de Barril
+CREATE TABLE IF NOT EXISTS saida_barril (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    estoque_barril_id INT,
+    envase_id INT NOT NULL,
+    lote_codigo VARCHAR(50) NOT NULL,
+    numero_barril INT NOT NULL,
+    quantidade_litros DECIMAL(10,2) NOT NULL,
+    estilo VARCHAR(100),
+    data_saida DATE NOT NULL,
+    destino VARCHAR(255),
+    responsavel_id INT,
+    observacoes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (estoque_barril_id) REFERENCES estoque_barris(id) ON DELETE SET NULL,
+    FOREIGN KEY (envase_id) REFERENCES envases(id) ON DELETE CASCADE,
+    FOREIGN KEY (responsavel_id) REFERENCES usuarios(id) ON DELETE SET NULL,
+    INDEX idx_estoque_barril (estoque_barril_id),
+    INDEX idx_data (data_saida),
+    INDEX idx_lote (lote_codigo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================================

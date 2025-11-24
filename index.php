@@ -38,9 +38,6 @@ $request = $_SERVER['REQUEST_URI'];
 $path = parse_url($request, PHP_URL_PATH);
 $path = trim($path, '/');
 
-// Remover a pasta base (Atomos) da URL se existir
-$path = preg_replace('#^Atomos/?#', '', $path);
-
 // Tratamento especial para rotas de login
 if (strpos($path, 'login/') === 0) {
     $loginAction = substr($path, 6); // Remove 'login/' do início
@@ -68,6 +65,31 @@ if (strpos($path, 'login/') === 0) {
         case '':
         case 'index':
             $loginController->index();
+            exit;
+        default:
+            http_response_code(404);
+            echo "Página não encontrada";
+            exit;
+    }
+}
+
+// Tratamento especial para rotas de importação
+if (strpos($path, 'import') === 0) {
+    // Verificar autenticação
+    if (!isset($_SESSION['user_id'])) {
+        redirect('/login');
+    }
+    
+    $importAction = substr($path, 7); // Remove 'import/' do início
+    if ($importAction === '') $importAction = 'index';
+    
+    $importController = new ImportController();
+    switch ($importAction) {
+        case 'index':
+            $importController->index();
+            exit;
+        case 'upload':
+            $importController->upload();
             exit;
         default:
             http_response_code(404);
