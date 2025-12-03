@@ -106,13 +106,6 @@ require_once __DIR__ . '/icons.php';
                             <span class="sidebar-icon">📝</span>
                         </a>
                     </li>
-                    <?php if (getCurrentUser()['perfil'] === 'administrador'): ?>
-                    <li class="sidebar-item">
-                        <a href="/import" class="sidebar-link <?= $activeMenu === 'import' ? 'active' : '' ?>" data-tooltip="Importar Receitas">
-                            <span class="sidebar-icon">📥</span>
-                        </a>
-                    </li>
-                    <?php endif; ?>
                     <li class="sidebar-item">
                         <a href="/producao" class="sidebar-link <?= $activeMenu === 'producao' ? 'active' : '' ?>" data-tooltip="Produção">
                             <span class="sidebar-icon">🍺</span>

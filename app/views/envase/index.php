@@ -61,19 +61,19 @@ require_once __DIR__ . '/../layouts/header.php';
                             <td><?= htmlspecialchars($envase['lote_codigo'] ?? '-') ?></td>
                             <td><?= htmlspecialchars($envase['estilo'] ?? '-') ?></td>
                             <td><?= formatDate($envase['data_envase'] ?? null) ?></td>
-                            <td><?= count($barrilModel->getByEnvase($envase['id'])) ?></td>
-                            <td><?= formatQuantity($envase['quantidade_litros'], 'L') ?></td>
+                            <td><?= $envase['total_barris'] ?? 0 ?></td>
+                            <td><?= formatQuantity($envase['total_litros'] ?? 0, 'L') ?></td>
                             <td>
                                 <?php
                                 $statusClass = [
-                                    'envasado' => 'badge-warning',
-                                    'em_estoque' => 'badge-info',
-                                    'baixado' => 'badge-success'
+                                    'em_processo' => 'badge-warning',
+                                    'finalizado' => 'badge-success',
+                                    'cancelado' => 'badge-danger'
                                 ];
                                 $statusLabel = [
-                                    'envasado' => 'Envasado',
-                                    'em_estoque' => 'Em Estoque',
-                                    'baixado' => 'Baixado'
+                                    'em_processo' => 'Em Processo',
+                                    'finalizado' => 'Finalizado',
+                                    'cancelado' => 'Cancelado'
                                 ];
                                 ?>
                                 <span class="badge <?= $statusClass[$envase['status']] ?? 'badge-secondary' ?>">
@@ -82,7 +82,7 @@ require_once __DIR__ . '/../layouts/header.php';
                             </td>
                             <td>
                                 <?= iconButton('view', '/envase/viewEnvase?id=' . $envase['id'], 'primary', 'Visualizar') ?>
-                                <?php if ($envase['status'] === 'envasado'): ?>
+                                <?php if ($envase['status'] === 'em_processo'): ?>
                                     <form method="POST" action="/envase/delete" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este envase? Esta ação não pode ser desfeita.')">
                                         <input type="hidden" name="id" value="<?= $envase['id'] ?>">
                                         <button type="submit" class="btn btn-sm btn-danger" title="Excluir">

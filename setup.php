@@ -119,9 +119,6 @@ function executeSQLFile($pdo, $filepath) {
             }
         }
 
-        // Desabilita verificação de chaves estrangeiras temporariamente
-        $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
-
         // Executa cada declaração
         $executed = 0;
         $errors = [];
@@ -141,9 +138,6 @@ function executeSQLFile($pdo, $filepath) {
             }
         }
 
-        // Reabilita verificação de chaves estrangeiras
-        $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
-
         return [
             'success' => true,
             'executed' => $executed,
@@ -151,13 +145,6 @@ function executeSQLFile($pdo, $filepath) {
         ];
 
     } catch (Exception $e) {
-        // Em caso de erro, reabilita verificação de chaves estrangeiras
-        try {
-            $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
-        } catch (Exception $e2) {
-            // Ignora erros ao reabilitar
-        }
-        
         return ['success' => false, 'error' => $e->getMessage()];
     }
 }

@@ -12,7 +12,7 @@ require_once __DIR__ . '/../layouts/header.php';
     <div class="card-body">
         <form method="POST" action="/envase/store">
             <div class="row">
-                <div class="col-6">
+                <div class="col-12">
                     <div class="form-group">
                         <label class="form-label">Lote de Produção *</label>
                         <select name="lote_id" class="form-control form-select" required>
@@ -22,22 +22,6 @@ require_once __DIR__ . '/../layouts/header.php';
                                     <?= htmlspecialchars($lote['codigo']) ?> -
                                     <?= htmlspecialchars($lote['receita_nome']) ?>
                                     (<?= htmlspecialchars($lote['estilo']) ?>)
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="col-6">
-                    <div class="form-group">
-                        <label class="form-label">Barril *</label>
-                        <select name="barril_id" class="form-control form-select" required>
-                            <option value="">Selecione o barril</option>
-                            <?php foreach ($barris as $barril): ?>
-                                <option value="<?= $barril['id'] ?>">
-                                    #<?= htmlspecialchars($barril['numero']) ?> -
-                                    <?= htmlspecialchars($barril['tipo']) ?>
-                                    (<?= formatQuantity($barril['capacidade_litros'], 'L') ?>)
                                 </option>
                             <?php endforeach; ?>
                         </select>

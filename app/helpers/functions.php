@@ -66,12 +66,9 @@ function formatMoney($value) {
  * Redireciona para uma URL
  */
 function redirect($url) {
-    // Se a URL começar com /, adicionar o subdiretório automaticamente
-    if (substr($url, 0, 1) === '/') {
-        $scriptName = dirname($_SERVER['SCRIPT_NAME']);
-        if ($scriptName !== '/') {
-            $url = $scriptName . $url;
-        }
+    // Adicionar BASE_PATH se a URL começar com /
+    if (substr($url, 0, 1) === '/' && defined('BASE_PATH')) {
+        $url = BASE_PATH . $url;
     }
     header("Location: $url");
     exit;

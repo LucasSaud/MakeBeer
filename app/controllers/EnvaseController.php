@@ -24,8 +24,9 @@ class EnvaseController extends BaseController {
 
         // Enriquecer com dados
         foreach ($envases as &$envase) {
-            if ($envase['lote_producao_id']) {
-                $lote = (new LoteProducao())->find($envase['lote_producao_id']);
+            $loteProducaoId = $envase['lote_producao_id'] ?? null;
+            if ($loteProducaoId) {
+                $lote = (new LoteProducao())->find($loteProducaoId);
                 if ($lote) {
                     $envase['lote_codigo'] = $lote['codigo'];
                     if ($lote['receita_id']) {
@@ -75,12 +76,10 @@ class EnvaseController extends BaseController {
      */
     public function create() {
         $lotes = $this->model->getLotesDisponiveis();
-        $barris = $this->model->getBarrisDisponiveis();
 
         $this->view('envase/form', [
             'envase' => null,
-            'lotes' => $lotes,
-            'barris' => $barris
+            'lotes' => $lotes
         ]);
     }
 
@@ -94,7 +93,6 @@ class EnvaseController extends BaseController {
 
         $dados = [
             'lote_producao_id' => $this->getPost('lote_id'),
-            'barril_id' => $this->getPost('barril_id'),
             'data_envase' => $this->getPost('data_envase') ?: date('Y-m-d'),
             'observacoes' => $this->getPost('observacoes')
         ];
